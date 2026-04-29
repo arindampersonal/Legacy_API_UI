@@ -119,16 +119,16 @@ export default function LegacyApiDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6">
+    <div className="min-h-screen bg-slate-50 p-3 sm:p-4 lg:p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="max-w-7xl mx-auto"
       >
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Legacy API Integration Studio
             </h1>
             <p className="text-sm text-slate-500 mt-1">
@@ -136,25 +136,25 @@ export default function LegacyApiDashboard() {
             </p>
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="outline" className="rounded-xl">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+            <Button variant="outline" className="w-full rounded-xl sm:w-auto">
               <Search className="w-4 h-4 mr-2" />
               Discover APIs
             </Button>
-            <Button className="rounded-xl">
+            <Button className="w-full rounded-xl sm:w-auto">
               <Sparkles className="w-4 h-4 mr-2" />
               Generate Comments
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
           {/* Sidebar */}
-          <Card className="col-span-3 rounded-2xl shadow-sm border">
-            <CardContent className="p-5">
+          <Card className="rounded-2xl shadow-sm border lg:col-span-3">
+            <CardContent className="p-4 sm:p-5">
               <h2 className="font-semibold text-lg mb-4">API Collections</h2>
 
-              <div className="space-y-3">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 {[
                   "Payment Gateway APIs",
                   "Legacy HRMS APIs",
@@ -173,11 +173,11 @@ export default function LegacyApiDashboard() {
           </Card>
 
           {/* Main Workspace */}
-          <div className="col-span-9 space-y-6">
+          <div className="space-y-4 lg:col-span-9 lg:space-y-6">
             {/* Request Builder */}
             <Card className="rounded-xl shadow-sm border">
-              <CardContent className="p-4 space-y-3">
-                <div className="flex items-center justify-between border-b pb-3">
+              <CardContent className="p-3 space-y-3 sm:p-4">
+                <div className="flex flex-col gap-3 border-b pb-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-xs text-slate-500">Legacy HRMS APIs</p>
                     <h2 className="text-sm font-semibold">New Request</h2>
@@ -193,11 +193,11 @@ export default function LegacyApiDashboard() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row">
                   <select
                     value={method}
                     onChange={(event) => setMethod(event.target.value)}
-                    className="h-10 w-24 rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-emerald-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                    className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-semibold text-emerald-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-24"
                     aria-label="HTTP method"
                   >
                     {methodOptions.map((option) => (
@@ -209,51 +209,51 @@ export default function LegacyApiDashboard() {
 
                   <Input
                     placeholder="Enter URL or paste text"
-                    className="h-10 rounded-md border-slate-300"
+                    className="h-10 min-w-0 rounded-md border-slate-300"
                   />
 
-                  <Button className="h-10 rounded-md px-7 bg-blue-600 hover:bg-blue-700">
+                  <Button className="h-10 w-full rounded-md bg-blue-600 px-7 hover:bg-blue-700 sm:w-auto">
                     <Send className="w-4 h-4 mr-2" />
                     Send
                   </Button>
                 </div>
 
                 <Tabs defaultValue="headers" className="w-full flex-col gap-0">
-                  <div className="flex items-center justify-between border-b">
-                    <TabsList className="h-10 justify-start rounded-none bg-transparent p-0">
-                    <TabsTrigger value="docs" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                  <div className="flex flex-col gap-2 border-b sm:flex-row sm:items-center sm:justify-between">
+                    <TabsList className="h-auto w-full justify-start overflow-x-auto rounded-none bg-transparent p-0 pb-px sm:h-10">
+                    <TabsTrigger value="docs" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Docs
                     </TabsTrigger>
-                    <TabsTrigger value="params" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                    <TabsTrigger value="params" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Params
                     </TabsTrigger>
-                    <TabsTrigger value="auth" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                    <TabsTrigger value="auth" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Authorization
                     </TabsTrigger>
-                    <TabsTrigger value="headers" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                    <TabsTrigger value="headers" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Headers
                       <span className="ml-1 rounded bg-slate-100 px-1.5 py-0.5 text-[11px] text-slate-600">
                         {headers.length}
                       </span>
                     </TabsTrigger>
-                    <TabsTrigger value="body" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                    <TabsTrigger value="body" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Body
                     </TabsTrigger>
-                    <TabsTrigger value="scripts" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                    <TabsTrigger value="scripts" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Scripts
                     </TabsTrigger>
-                    <TabsTrigger value="settings" className="h-10 rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
+                    <TabsTrigger value="settings" className="h-10 flex-none rounded-none border-b-2 border-transparent px-3 data-[state=active]:border-blue-600 data-[state=active]:bg-transparent data-[state=active]:shadow-none">
                       Settings
                     </TabsTrigger>
                     </TabsList>
-                    <button className="text-xs font-medium text-blue-600" type="button">
+                    <button className="self-start text-xs font-medium text-blue-600 sm:self-auto" type="button">
                       Cookies
                     </button>
                   </div>
 
                   <TabsContent value="headers" className="mt-4">
                     <div className="space-y-2">
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-2">
                           <h3 className="text-sm font-medium">Headers</h3>
                           <Badge variant="secondary" className="gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-500 hover:bg-slate-100">
@@ -274,7 +274,8 @@ export default function LegacyApiDashboard() {
                         </Button>
                       </div>
 
-                      <div className="overflow-hidden rounded-none border bg-white">
+                      <div className="overflow-x-auto rounded-none border bg-white">
+                        <div className="min-w-[720px]">
                         <div className="grid grid-cols-[36%_31%_1fr_96px] border-b text-sm text-slate-600">
                           <div className="border-r px-3 py-2 text-center">Key</div>
                           <div className="border-r px-3 py-2">Value</div>
@@ -358,6 +359,7 @@ export default function LegacyApiDashboard() {
                             </div>
                           );
                         })}
+                        </div>
                       </div>
                     </div>
                   </TabsContent>
@@ -378,10 +380,10 @@ export default function LegacyApiDashboard() {
 
                   <TabsContent value="body" className="mt-4">
                     <div className="min-h-[148px] space-y-3">
-                      <select
+                        <select
                         value={bodyType}
                         onChange={(event) => setBodyType(event.target.value)}
-                        className="h-8 w-44 rounded-md border border-slate-200 bg-slate-100 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                        className="h-8 w-full rounded-md border border-slate-200 bg-slate-100 px-3 text-sm font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 sm:w-44"
                         aria-label="Body type"
                       >
                         {bodyTypeOptions.map((option) => (
@@ -409,7 +411,8 @@ export default function LegacyApiDashboard() {
                           Select a binary file for this request body
                         </div>
                       ) : (
-                        <div className="overflow-hidden border bg-white">
+                        <div className="overflow-x-auto border bg-white">
+                          <div className="min-w-[420px]">
                           <div className="grid grid-cols-2 border-b text-sm text-slate-600">
                             <div className="border-r px-3 py-2">Key</div>
                             <div className="px-3 py-2">Value</div>
@@ -423,6 +426,7 @@ export default function LegacyApiDashboard() {
                               placeholder="Value"
                               className="h-9 px-3 text-sm outline-none placeholder:text-slate-400 focus:bg-blue-50"
                             />
+                          </div>
                           </div>
                         </div>
                       )}
@@ -456,7 +460,7 @@ export default function LegacyApiDashboard() {
                   </TabsContent>
                 </Tabs>
 
-                <div className="flex h-9 items-center gap-5 border-t text-sm">
+                <div className="flex h-9 items-center gap-5 overflow-x-auto border-t text-sm">
                   <button
                     type="button"
                     className="font-semibold text-slate-900"
@@ -475,9 +479,9 @@ export default function LegacyApiDashboard() {
             </Card>
 
             {/* Response + AI Output */}
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 xl:gap-6">
               <Card className="rounded-2xl shadow-sm border">
-                <CardContent className="p-5">
+                <CardContent className="p-4 sm:p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <Database className="w-5 h-5" />
                     <h2 className="font-semibold">Normalized API Response</h2>
@@ -498,7 +502,7 @@ export default function LegacyApiDashboard() {
               </Card>
 
               <Card className="rounded-2xl shadow-sm border">
-                <CardContent className="p-5">
+                <CardContent className="p-4 sm:p-5">
                   <div className="flex items-center gap-2 mb-4">
                     <FileCode className="w-5 h-5" />
                     <h2 className="font-semibold">AI Generated Code Comments</h2>
@@ -519,13 +523,13 @@ export default function LegacyApiDashboard() {
 
             {/* Bottom Insights */}
             <Card className="rounded-2xl shadow-sm border">
-              <CardContent className="p-5">
+              <CardContent className="p-4 sm:p-5">
                 <div className="flex items-center gap-2 mb-4">
                   <ShieldCheck className="w-5 h-5" />
                   <h2 className="font-semibold">System Insights</h2>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
                   {[
                     "Backward compatibility maintained",
                     "No production API changes required",
