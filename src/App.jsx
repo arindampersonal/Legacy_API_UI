@@ -6,6 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
+import { apiCollectionPages } from "@/pages";
+import AuthenticationPage from "@/pages/AuthenticationPage";
+import LoginPage from "@/pages/LoginPage";
 import { Clock, Database, Eye, FileCode, MoreHorizontal, Plus, Search, Send, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
 
 const headerOptions = [
@@ -72,6 +75,9 @@ const bodyTypeOptions = [
 const methodOptions = ["GET", "POST", "PUT", "DELETE"];
 
 export default function LegacyApiDashboard() {
+  const [currentView, setCurrentView] = useState("login");
+  const [selectedCollectionId, setSelectedCollectionId] =
+    useState("legacy-hrms");
   const [method, setMethod] = useState("GET");
   const [bodyType, setBodyType] = useState("none");
   const [headers, setHeaders] = useState([
@@ -118,6 +124,25 @@ export default function LegacyApiDashboard() {
     );
   };
 
+  const selectedCollection =
+    apiCollectionPages.find(
+      (collection) => collection.id === selectedCollectionId
+    ) ?? apiCollectionPages[0];
+  const SelectedCollectionPage = selectedCollection.Component;
+
+  if (currentView === "login") {
+    return (
+      <LoginPage
+        onContinue={() => setCurrentView("studio")}
+        onOpenAuth={() => setCurrentView("auth")}
+      />
+    );
+  }
+
+  if (currentView === "auth") {
+    return <AuthenticationPage onBack={() => setCurrentView("studio")} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 p-3 sm:p-4 lg:p-6">
       <motion.div
@@ -137,6 +162,14 @@ export default function LegacyApiDashboard() {
           </div>
 
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+            <Button
+              variant="outline"
+              className="w-full rounded-xl sm:w-auto"
+              onClick={() => setCurrentView("auth")}
+            >
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              Authentication
+            </Button>
             <Button variant="outline" className="w-full rounded-xl sm:w-auto">
               <Search className="w-4 h-4 mr-2" />
               Discover APIs
@@ -155,18 +188,25 @@ export default function LegacyApiDashboard() {
               <h2 className="font-semibold text-lg mb-4">API Collections</h2>
 
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                {[
-                  "Payment Gateway APIs",
-                  "Legacy HRMS APIs",
-                  "Inventory Management",
-                  "Custom ERP Services",
-                ].map((item, index) => (
-                  <div
-                    key={index}
-                    className="p-3 rounded-xl border hover:bg-slate-100 cursor-pointer transition"
+                {apiCollectionPages.map((collection) => (
+                  <button
+                    key={collection.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedCollectionId(collection.id);
+                      setMethod(collection.method);
+                    }}
+                    className={`rounded-xl border p-3 text-left transition ${
+                      selectedCollection.id === collection.id
+                        ? "border-blue-500 bg-blue-50 text-blue-900"
+                        : "bg-white hover:bg-slate-100"
+                    }`}
                   >
-                    <p className="text-sm font-medium">{item}</p>
-                  </div>
+                    <p className="text-sm font-medium">{collection.name}</p>
+                    <p className="mt-1 line-clamp-2 text-xs text-slate-500">
+                      {collection.subtitle}
+                    </p>
+                  </button>
                 ))}
               </div>
             </CardContent>
@@ -174,12 +214,16 @@ export default function LegacyApiDashboard() {
 
           {/* Main Workspace */}
           <div className="space-y-4 lg:col-span-9 lg:space-y-6">
+            <SelectedCollectionPage />
+
             {/* Request Builder */}
             <Card className="rounded-xl shadow-sm border">
               <CardContent className="p-3 space-y-3 sm:p-4">
                 <div className="flex flex-col gap-3 border-b pb-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <p className="text-xs text-slate-500">Legacy HRMS APIs</p>
+                    <p className="text-xs text-slate-500">
+                      {selectedCollection.name}
+                    </p>
                     <h2 className="text-sm font-semibold">New Request</h2>
                   </div>
 
@@ -208,7 +252,7 @@ export default function LegacyApiDashboard() {
                   </select>
 
                   <Input
-                    placeholder="Enter URL or paste text"
+                    placeholder={selectedCollection.endpoint}
                     className="h-10 min-w-0 rounded-md border-slate-300"
                   />
 
@@ -489,14 +533,16 @@ export default function LegacyApiDashboard() {
 
                   <Textarea
                     className="rounded-xl min-h-[280px] font-mono text-sm"
-                    defaultValue={`{
+                    value={`{
   "status": "success",
   "normalized_payload": {
-    "endpoint": "/employee/details",
-    "response_type": "JSON",
-    "mapped_fields": []
+    "collection": "${selectedCollection.name}",
+    "endpoint": "${selectedCollection.endpoint}",
+    "response_type": "${selectedCollection.responseType}",
+    "mapped_fields": ${JSON.stringify(selectedCollection.mappedFields, null, 4)}
   }
 }`}
+                    readOnly
                   />
                 </CardContent>
               </Card>
@@ -510,12 +556,13 @@ export default function LegacyApiDashboard() {
 
                   <Textarea
                     className="rounded-xl min-h-[280px] font-mono text-sm"
-                    defaultValue={`/**
- * Fetches employee details from legacy HRMS service.
- * Uses abstraction layer to normalize inconsistent API responses.
- * Supports deprecated token-based authentication.
- * Returns structured employee metadata for downstream systems.
+                    value={`/**
+ * Handles ${selectedCollection.name.toLowerCase()} through the legacy integration layer.
+ * Normalizes ${selectedCollection.responseType.toLowerCase()} for downstream consumers.
+ * Documents authentication, mapping, and compatibility behavior.
+ * Primary endpoint: ${selectedCollection.method} ${selectedCollection.endpoint}
  */`}
+                    readOnly
                   />
                 </CardContent>
               </Card>
@@ -530,11 +577,7 @@ export default function LegacyApiDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-3 md:gap-4">
-                  {[
-                    "Backward compatibility maintained",
-                    "No production API changes required",
-                    "AI inference confidence: 92%",
-                  ].map((item, i) => (
+                  {selectedCollection.insights.map((item, i) => (
                     <div
                       key={i}
                       className="p-4 rounded-xl border bg-white text-sm font-medium"
