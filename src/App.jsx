@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { apiCollectionPages } from "@/pages";
 import AuthenticationPage from "@/pages/AuthenticationPage";
 import LoginPage from "@/pages/LoginPage";
-import { Clock, Database, Eye, FileCode, MoreHorizontal, Plus, Search, Send, ShieldCheck, Sparkles, Trash2 } from "lucide-react";
+import { Box, ChevronDown, ChevronRight, Clock, Database, Eye, FileCode, Home, MoreHorizontal, PanelTop, Plus, RotateCcw, Search, Send, ShieldCheck, Sparkles, Star, Trash2, Users } from "lucide-react";
 
 const headerOptions = [
   {
@@ -74,10 +74,43 @@ const bodyTypeOptions = [
 
 const methodOptions = ["GET", "POST", "PUT", "DELETE"];
 
+const initialRequests = [
+  {
+    id: 1,
+    method: "GET",
+    name: "Get data",
+    endpoint: "/employee/details",
+  },
+  {
+    id: 2,
+    method: "POST",
+    name: "login",
+    endpoint: "/auth/login",
+  },
+  {
+    id: 3,
+    method: "GET",
+    name: "refresh",
+    endpoint: "/auth/refresh",
+  },
+  {
+    id: 4,
+    method: "GET",
+    name: "user info",
+    endpoint: "/employee/details",
+  },
+  {
+    id: 5,
+    method: "GET",
+    name: "New Request",
+    endpoint: "/employee/details",
+  },
+];
+
 export default function LegacyApiDashboard() {
   const [currentView, setCurrentView] = useState("login");
-  const [selectedCollectionId, setSelectedCollectionId] =
-    useState("legacy-hrms");
+  const [requests, setRequests] = useState(initialRequests);
+  const [selectedRequestId, setSelectedRequestId] = useState(4);
   const [method, setMethod] = useState("GET");
   const [bodyType, setBodyType] = useState("none");
   const [headers, setHeaders] = useState([
@@ -125,10 +158,48 @@ export default function LegacyApiDashboard() {
   };
 
   const selectedCollection =
-    apiCollectionPages.find(
-      (collection) => collection.id === selectedCollectionId
-    ) ?? apiCollectionPages[0];
-  const SelectedCollectionPage = selectedCollection.Component;
+    apiCollectionPages.find((collection) => collection.id === "legacy-hrms") ??
+    apiCollectionPages[0];
+  const selectedRequest =
+    requests.find((request) => request.id === selectedRequestId) ?? requests[0];
+
+  const selectRequest = (request) => {
+    setSelectedRequestId(request.id);
+    setMethod(request.method);
+  };
+
+  const addRequest = () => {
+    const newRequest = {
+      id: Date.now(),
+      method: "GET",
+      name: "New Request",
+      endpoint: selectedCollection.endpoint,
+    };
+
+    setRequests((currentRequests) => [...currentRequests, newRequest]);
+    setSelectedRequestId(newRequest.id);
+    setMethod(newRequest.method);
+  };
+
+  const deleteRequest = (requestId) => {
+    setRequests((currentRequests) => {
+      if (currentRequests.length === 1) {
+        return currentRequests;
+      }
+
+      const nextRequests = currentRequests.filter(
+        (request) => request.id !== requestId
+      );
+
+      if (selectedRequestId === requestId) {
+        const nextSelectedRequest = nextRequests[0];
+        setSelectedRequestId(nextSelectedRequest.id);
+        setMethod(nextSelectedRequest.method);
+      }
+
+      return nextRequests;
+    });
+  };
 
   if (currentView === "login") {
     return (
@@ -183,48 +254,186 @@ export default function LegacyApiDashboard() {
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:gap-6">
           {/* Sidebar */}
-          <Card className="rounded-2xl shadow-sm border lg:col-span-3">
-            <CardContent className="p-4 sm:p-5">
-              <h2 className="font-semibold text-lg mb-4">API Collections</h2>
+          <aside className="overflow-hidden rounded-xl border bg-white shadow-sm lg:col-span-3">
+            <div className="flex h-11 items-center gap-2 border-b px-3 text-sm">
+              <button
+                type="button"
+                className="flex h-7 w-7 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100"
+                aria-label="Home"
+              >
+                <Home className="h-4 w-4" />
+              </button>
+              <div className="flex min-w-0 flex-1 items-center gap-2">
+                <Users className="h-4 w-4 text-slate-500" />
+                <span className="truncate font-medium">Arindam's Workspace</span>
+                <ChevronDown className="h-4 w-4 text-slate-400" />
+              </div>
+            </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                {apiCollectionPages.map((collection) => (
+            <div className="flex h-11 items-center justify-center gap-5 border-b bg-slate-50">
+              <button
+                type="button"
+                className="flex h-8 w-10 items-center justify-center rounded-md bg-white text-slate-700 shadow-sm"
+                aria-label="Collections"
+              >
+                <Box className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                className="flex h-8 w-10 items-center justify-center rounded-md text-slate-500 hover:bg-white"
+                aria-label="Environments"
+              >
+                <PanelTop className="h-4 w-4" />
+              </button>
+              <button
+                type="button"
+                className="flex h-8 w-10 items-center justify-center rounded-md text-slate-500 hover:bg-white"
+                aria-label="History"
+              >
+                <RotateCcw className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="p-3">
+              <div className="flex items-center gap-2">
+                <div className="flex h-8 min-w-0 flex-1 items-center gap-2 rounded-md border bg-white px-2 text-slate-400">
+                  <Search className="h-4 w-4" />
+                  <span className="truncate text-xs">Filter collections</span>
+                </div>
+                <button
+                  type="button"
+                  className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100"
+                  onClick={addRequest}
+                  aria-label="Add request"
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  className="flex h-8 w-8 items-center justify-center rounded-md text-slate-500 hover:bg-slate-100"
+                  aria-label="More collection actions"
+                >
+                  <MoreHorizontal className="h-4 w-4" />
+                </button>
+              </div>
+
+              <div className="mt-4">
+                <div className="mb-2 flex items-center gap-1 text-[11px] font-semibold uppercase text-slate-900">
+                  <ChevronDown className="h-3.5 w-3.5" />
+                  Collections
+                </div>
+
+                <div className="rounded-md bg-slate-100">
+                  <div className="flex h-8 items-center gap-2 rounded-md px-2">
+                    <ChevronDown className="h-4 w-4 text-slate-500" />
+                    <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                      My Collection
+                    </span>
+                    <button
+                      type="button"
+                      className="flex h-6 w-6 items-center justify-center rounded text-slate-500 hover:bg-white"
+                      onClick={addRequest}
+                      aria-label="Add request to My Collection"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      className="flex h-6 w-6 items-center justify-center rounded text-slate-500 hover:bg-white"
+                      aria-label="Favorite collection"
+                    >
+                      <Star className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      className="flex h-6 w-6 items-center justify-center rounded text-slate-500 hover:bg-white"
+                      aria-label="More options"
+                    >
+                      <MoreHorizontal className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <div className="border-l border-slate-200 bg-white py-1 pl-5">
+                    {requests.map((request) => (
+                      <button
+                        key={request.id}
+                        type="button"
+                        onClick={() => selectRequest(request)}
+                        className={`group/request flex h-8 w-full items-center gap-2 rounded-md px-3 text-left text-sm transition ${
+                          selectedRequest.id === request.id
+                            ? "bg-slate-200 text-slate-950"
+                            : "text-slate-700 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span
+                          className={`w-9 shrink-0 text-[10px] font-semibold ${
+                            request.method === "POST"
+                              ? "text-orange-500"
+                              : "text-emerald-600"
+                          }`}
+                        >
+                          {request.method}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate">
+                          {request.name}
+                        </span>
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          aria-label={`Delete ${request.name}`}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            deleteRequest(request.id);
+                          }}
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              deleteRequest(request.id);
+                            }
+                          }}
+                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded text-slate-400 transition hover:bg-white hover:text-red-500 focus:bg-white focus:text-red-500 focus:outline-none ${
+                            requests.length === 1
+                              ? "pointer-events-none opacity-30"
+                              : "opacity-0 group-hover/request:opacity-100 group-focus/request:opacity-100"
+                          }`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-36 divide-y border-t text-xs font-semibold uppercase text-slate-800">
+                {["Environments", "Specs", "Flows"].map((item) => (
                   <button
-                    key={collection.id}
+                    key={item}
                     type="button"
-                    onClick={() => {
-                      setSelectedCollectionId(collection.id);
-                      setMethod(collection.method);
-                    }}
-                    className={`rounded-xl border p-3 text-left transition ${
-                      selectedCollection.id === collection.id
-                        ? "border-blue-500 bg-blue-50 text-blue-900"
-                        : "bg-white hover:bg-slate-100"
-                    }`}
+                    className="flex h-9 w-full items-center gap-2 text-left"
                   >
-                    <p className="text-sm font-medium">{collection.name}</p>
-                    <p className="mt-1 line-clamp-2 text-xs text-slate-500">
-                      {collection.subtitle}
-                    </p>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                    {item}
                   </button>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </aside>
 
           {/* Main Workspace */}
           <div className="space-y-4 lg:col-span-9 lg:space-y-6">
-            <SelectedCollectionPage />
-
             {/* Request Builder */}
             <Card className="rounded-xl shadow-sm border">
               <CardContent className="p-3 space-y-3 sm:p-4">
                 <div className="flex flex-col gap-3 border-b pb-3 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-xs text-slate-500">
-                      {selectedCollection.name}
+                      My Collection
                     </p>
-                    <h2 className="text-sm font-semibold">New Request</h2>
+                    <h2 className="text-sm font-semibold">
+                      {selectedRequest.name}
+                    </h2>
                   </div>
 
                   <div className="flex items-center gap-2">
@@ -252,7 +461,7 @@ export default function LegacyApiDashboard() {
                   </select>
 
                   <Input
-                    placeholder={selectedCollection.endpoint}
+                    placeholder={selectedRequest.endpoint}
                     className="h-10 min-w-0 rounded-md border-slate-300"
                   />
 
